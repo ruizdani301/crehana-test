@@ -8,6 +8,7 @@ SECRET_KEY = "clavesecreta123456789"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
+
 def create_access_token(data: dict):
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -16,6 +17,7 @@ def create_access_token(data: dict):
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
+
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
@@ -28,7 +30,6 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-        # Aquí puedes obtener más datos del usuario o consultar BD
         user = {"username": username}
     except PyJWTError:
         raise credentials_exception

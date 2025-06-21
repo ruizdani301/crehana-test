@@ -4,14 +4,11 @@ from infrastructure.api.user_routes import router_users as users_router
 from infrastructure.db.database import engine
 from infrastructure.db.models import Base
 
-# Crear las tablas al iniciar la app
+# Create tables
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(
-    title="TODO API",
-    version="1.0.0"
-)
+app = FastAPI(title="TASK_TRACKING API", version="1.0.0")
 
-# Montar los endpoints
+# Endpoints definitions
 app.include_router(task_router)
-app.include_router(users_router) 
+app.include_router(users_router)
