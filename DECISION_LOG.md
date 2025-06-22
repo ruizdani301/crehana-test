@@ -6,7 +6,7 @@ This document contains the technical decisions made during the development of th
 
 ## 1. Code Formatter: **Black**
 
-We chose **Black** as the code formatter to keep a uniform, clean, and readable structure throughout the project, making collaboration between developers easier.
+**Black** and **flake8** as the code formatter, vulnerability and style reviewer to keep a uniform, clean, and readable structure throughout the project, making collaboration between developers easier.
 
 ---
 
