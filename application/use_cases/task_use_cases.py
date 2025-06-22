@@ -1,9 +1,15 @@
 from infrastructure.db.repositories import TaskRepository, TaskListRepository
 from application.schemas import (
-    TaskCreate, TaskUpdate, TaskOut,
-    TaskListCreate, TaskListUpdate, TaskListOut, TaskListFilteredResponse
+    TaskCreate,
+    TaskUpdate,
+    TaskOut,
+    TaskListCreate,
+    TaskListUpdate,
+    TaskListOut,
+    TaskListFilteredResponse,
 )
-from domain.models import TaskStatus
+from application.schemas import TaskStatus
+
 
 class TaskListUseCase:
     def __init__(self, list_repo: TaskListRepository, task_repo: TaskRepository):
@@ -12,7 +18,7 @@ class TaskListUseCase:
 
     def create_list(self, data: TaskListCreate) -> TaskListOut:
         new_list = self.list_repo.create_list(name=data.name)
-        return TaskListOut.from_orm(new_list)
+        return TaskListOut.model_validate(new_list)
 
     def update_list(self, list_id: int, data: TaskListUpdate) -> TaskListOut:
         task_list = self.list_repo.get_list(list_id)
@@ -20,18 +26,44 @@ class TaskListUseCase:
             task_list.name = data.name
         self.list_repo.db.commit()
         self.list_repo.db.refresh(task_list)
-        return TaskListOut.from_orm(task_list)
+        return TaskListOut.model_validate(task_list)
+
+    def get_list(self) -> list[TaskListOut]:
+        return self.list_repo.get_all_lists()
 
     def delete_list(self, list_id: int):
         self.list_repo.delete_list(list_id)
 
-    def list_tasks_with_completion(self, list_id: int, status: TaskStatus = None, priority=None) -> TaskListFilteredResponse:
+    def list_tasks_with_completion(
+        self, list_id: int, status: TaskStatus = None, priority=None
+    ) -> TaskListFilteredResponse:
+        """
+        Get tasks from a given list, filtered by status and/or priority
+        and returns them along with the completion percentage of the list.
+
+        Args:
+            list_id (int): The ID of the task list to query.
+            status (TaskStatus, optional): Filter by task status. Defaults to None.
+            priority (TaskPriority, optional): Filter by task priority. Defaults to None.
+
+        Returns:
+            TaskListFilteredResponse: A response containing the list of tasks
+            and the completion percentage.
+        """
         tasks = self.task_repo.get_tasks_by_list(list_id, status, priority)
         total = len(tasks)
-        done = len([t for t in tasks if t.status == TaskStatus.DONE.value])
-        print(done)
+        done = len(
+            [
+                each_task
+                for each_task in tasks
+                if each_task.status == TaskStatus.DONE.value
+            ]
+        )
         percentage = int((done / total) * 100) if total else 0
-        return TaskListFilteredResponse(tasks=[TaskOut.from_orm(t) for t in tasks], completion=f"{percentage}%")
+        return TaskListFilteredResponse(
+            tasks=[TaskOut.model_validate(each_task) for each_task in tasks],
+            completion=f"{percentage}%",
+        )
 
 
 class TaskUseCase:
@@ -44,9 +76,9 @@ class TaskUseCase:
             title=data.title,
             description=data.description,
             status=data.status,
-            priority=data.priority
+            priority=data.priority,
         )
-        return TaskOut.from_orm(task)
+        return TaskOut.model_validate(task)
 
     def update_task(self, task_id: int, data: TaskUpdate) -> TaskOut:
         task = self.repo.get_task(task_id)
@@ -60,11 +92,11 @@ class TaskUseCase:
             task.priority = data.priority
         self.repo.db.commit()
         self.repo.db.refresh(task)
-        return TaskOut.from_orm(task)
+        return TaskOut.model_validate(task)
 
     def delete_task(self, task_id: int):
         self.repo.delete_task(task_id)
 
     def change_status(self, task_id: int, new_status: TaskStatus) -> TaskOut:
         task = self.repo.update_task_status(task_id, new_status)
-        return TaskOut.from_orm(task)
+        return TaskOut.model_validate(task)
