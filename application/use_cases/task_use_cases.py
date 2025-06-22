@@ -39,8 +39,10 @@ class TaskListUseCase:
 
         Args:
             list_id (int): The ID of the task list to query.
-            status (TaskStatus, optional): Filter by task status. Defaults to None.
-            priority (TaskPriority, optional): Filter by task priority. Defaults to None.
+            status (TaskStatus, optional): Filter by task status.
+            Defaults to None.
+            priority (TaskPriority, optional): Filter by task priority.
+            Defaults to None.
 
         Returns:
             TaskListFilteredResponse: A response containing the list of tasks

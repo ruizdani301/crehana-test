@@ -6,7 +6,6 @@ from utils.jwt_handler import get_current_user
 from application.use_cases.task_use_cases import TaskListOut
 
 
-
 app.dependency_overrides[get_current_user] = lambda: {"user_id": 1}
 
 
