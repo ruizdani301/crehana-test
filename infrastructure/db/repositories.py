@@ -2,7 +2,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException, status
 from infrastructure.db.models import TaskModel, TaskListModel
-from application.schemas import TaskListOut, TaskStatus, TaskPriority
+from application.schemas import (
+    TaskListOut,
+    TaskStatus,
+    TaskPriority,
+    TaskCreate,
+    TaskListUpdate,
+)
 
 
 # TaskList repository
@@ -19,6 +25,14 @@ class TaskListRepository:
 
     def get_list(self, list_id: int) -> TaskListModel:
         return self.db.query(TaskListModel).filter_by(id=list_id).first()
+
+    def update_name_list(self, list_id: int, data: TaskListUpdate) -> TaskListModel:
+        task_list = self.get_list(list_id)
+        if task_list:
+            task_list.name = data.name
+            self.db.commit()
+            self.db.refresh(task_list)
+        return task_list
 
     def get_all_lists(self) -> list[TaskListOut]:
         db_lists = self.db.query(TaskListModel).all()
@@ -79,6 +93,17 @@ class TaskRepository:
         task = self.get_task(task_id)
         if task:
             task.status = new_status
+            self.db.commit()
+            self.db.refresh(task)
+        return task
+
+    def update_task(self, task_id: int, new_data: TaskCreate) -> TaskModel:
+        task = self.get_task(task_id)
+        if task:
+            task.title = new_data.title
+            task.description = new_data.description
+            task.status = new_data.status
+            task.priority = new_data.priority
             self.db.commit()
             self.db.refresh(task)
         return task

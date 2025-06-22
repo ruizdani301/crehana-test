@@ -25,6 +25,16 @@ def create_task_list(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user),
 ):
+    """
+    Create a new task list.
+
+    Args:
+        data (TaskListCreate): The task list data to create.
+
+    Returns:
+        TaskListOut: The created task list.
+        status: HTTP status code 200
+    """
     use_case = TaskListUseCase(
         TaskListRepository(db),
         TaskRepository(db),
@@ -37,6 +47,21 @@ def get_task_list(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user),
 ):
+    """
+    Retrieve all task lists.
+
+    Args:
+        db (Session): Database session (Dependency injection).
+        current_user (dict): Authenticated user (Dependency injection).
+
+    Returns:
+        list[TaskListOut]: A list of all task lists.
+        status: HTTP status code 200
+
+    Raises:
+        HTTPException (500): If there is an internal server error.
+    """
+
     use_case = TaskListUseCase(TaskListRepository(db), TaskRepository(db))
     return jsonable_encoder(use_case.get_list())
 
@@ -48,6 +73,21 @@ def update_task_list(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user),
 ):
+    """
+    update a task list by its ID and with the provided data.
+
+    Args:
+        list_id (int): ID task list to update.
+        data (TaskListUpdate): Datos a actualizar.
+
+    Returns:
+        TaskListOut: updated task list.
+        status: HTTP status code 200
+
+    Raises:
+        HTTPException (404): if the task list doesn't exist.
+        HTTPException (500): If there is an internal server error
+    """
     use_case = TaskListUseCase(TaskListRepository(db), TaskRepository(db))
     return use_case.update_list(list_id, data)
 
@@ -58,6 +98,22 @@ def delete_task_list(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user),
 ):
+    """
+    Delete a task list by its ID.
+
+    Args:
+        list_id (int): The ID of the task list to delete.
+        db (Session): Database session (Dependency injection).
+        current_user (dict): Authenticated user (Dependency injection).
+
+    Returns:
+        dict: Confirmation message.
+        status: HTTP status code 200
+
+    Raises:
+        HTTPException (404): If the task list doesn't exist or user lacks permission.
+        HTTPException (500): If there is an internal server error
+    """
     use_case = TaskListUseCase(TaskListRepository(db), TaskRepository(db))
     use_case.delete_list(list_id)
     return {"message": "List deleted"}
@@ -71,6 +127,20 @@ def list_tasks_with_filters(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user),
 ):
+    """
+    Get tasks from a given list, filtered by status and/or priority
+    and returns them along with the completion percentage of the list.
+
+    Args:
+        list_id (int): The ID of the task list to query.
+        status (TaskStatus, optional): Filter by task status. Defaults to None.
+        priority (str, optional): Filter by task priority. Defaults to None.
+
+    Returns:
+        TaskListFilteredResponse: A response containing the list of tasks
+        and the completion percentage.
+        HTTP status code 200
+    """
     use_case = TaskListUseCase(TaskListRepository(db), TaskRepository(db))
     return use_case.list_tasks_with_completion(list_id, status, priority)
 
@@ -82,6 +152,24 @@ def create_task(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user),
 ):
+    """
+    Create a new task in a task list.
+
+    Args:
+        list_id (int): ID of the task list to add the task to.
+        data (TaskCreate): New task data to create.
+        db (Session): Database session (Dependency injection).
+        current_user (dict): Authenticated user (Dependency injection).
+
+    Returns:
+        TaskOut: Created task information.
+        status: HTTP status code 200.
+
+    Raises:
+        HTTPException (404): If the task list doesn't exist or user lacks permission.
+        HTTPException (422): If validation fails on the new task data.
+        HTTPException (500): If there is an internal server error
+    """
     use_case = TaskUseCase(TaskRepository(db))
     return use_case.create_task(list_id, data)
 
@@ -103,10 +191,12 @@ def update_task(
 
     Returns:
         TaskOut: Updated task information.
+        status: HTTP status code 200
 
     Raises:
         HTTPException (404): If the task doesn't exist or user lacks permission.
         HTTPException (422): If validation fails on the update data.
+        HTTPException (500): If there is an internal server error
     """
     use_case = TaskUseCase(TaskRepository(db))
     return use_case.update_task(task_id, data)
@@ -129,10 +219,12 @@ def change_task_status(
 
     Returns:
         TaskOut: Updated task data.
+        status: HTTP status code 200
 
     Raises:
         HTTPException (404): If the task does not exist or user lacks permission.
         HTTPException (400): If the status transition is invalid.
+        HTTPException (500): If there is an internal server error
     """
     use_case = TaskUseCase(TaskRepository(db))
     return use_case.change_status(task_id, new_status)
@@ -156,6 +248,7 @@ def delete_task(
 
     Raises:
         HTTPException (404): If the task does not exist or user lacks permission.
+        HTTPException (500): If there is an internal server error
     """
     use_case = TaskUseCase(TaskRepository(db))
     use_case.delete_task(task_id)

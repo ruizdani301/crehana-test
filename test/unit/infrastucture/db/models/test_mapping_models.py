@@ -1,4 +1,11 @@
-from infrastructure.db.models import TaskListModel, TaskModel, UserModel, TaskStatus, TaskPriority
+from infrastructure.db.models import (
+    TaskListModel,
+    TaskModel,
+    UserModel,
+    TaskStatus,
+    TaskPriority,
+)
+
 
 def test_tasklist_model_basic():
     tasklist = TaskListModel(name="Lista prueba")
@@ -6,19 +13,22 @@ def test_tasklist_model_basic():
     assert hasattr(tasklist, "tasks")
     assert isinstance(tasklist.tasks, list) or tasklist.tasks is None
 
+
 def test_task_model_basic_relations():
     tasklist = TaskListModel(name="Lista prueba")
     task = TaskModel(title="Tarea 1", task_list=tasklist)
-    
+
     assert task.task_list == tasklist
     assert task.title == "Tarea 1"
-    
-   
+
     tasklist.tasks = [task]
     assert tasklist.tasks[0] == task
 
+
 def test_task_model_default_enum_values():
-    task = TaskModel(title="Tarea enum", status=TaskStatus.pending, priority=TaskPriority.medium)
+    task = TaskModel(
+        title="Tarea enum", status=TaskStatus.pending, priority=TaskPriority.medium
+    )
     assert task.status == TaskStatus.pending
     assert task.priority == TaskPriority.medium
 
@@ -54,6 +64,7 @@ def test_create_user_model():
 def test_task_status_enum_values():
     assert TaskStatus.pending.value == "pending"
     assert TaskStatus.done.value == "done"
+
 
 def test_task_priority_enum_values():
     values = [p.value for p in TaskPriority]

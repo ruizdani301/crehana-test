@@ -1,3 +1,4 @@
+from application.schemas import TaskStatus, TaskPriority
 from sqlalchemy import Column, Integer, String, Enum, ForeignKey
 from sqlalchemy.orm import relationship
 import enum
@@ -6,16 +7,16 @@ from infrastructure.db.database import Base
 # Base = declarative_base()
 
 
-class TaskStatus(str, enum.Enum):
-    pending = "pending"
-    in_progress = "in_progress"
-    done = "done"
+# class TaskStatus(str, enum.Enum):
+#     pending = "pending"
+#     in_progress = "in_progress"
+#     done = "done"
 
 
-class TaskPriority(str, enum.Enum):
-    low = "low"
-    medium = "medium"
-    high = "high"
+# class TaskPriority(str, enum.Enum):
+#     low = "low"
+#     medium = "medium"
+#     high = "high"
 
 
 class TaskListModel(Base):

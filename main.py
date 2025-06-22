@@ -4,7 +4,6 @@ from infrastructure.api.user_routes import router_users as users_router
 from infrastructure.db.database import engine
 from infrastructure.db.models import Base
 
-# Create tables
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="TASK_TRACKING API", version="1.0.0")

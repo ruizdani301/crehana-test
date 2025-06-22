@@ -21,11 +21,7 @@ class TaskListUseCase:
         return TaskListOut.model_validate(new_list)
 
     def update_list(self, list_id: int, data: TaskListUpdate) -> TaskListOut:
-        task_list = self.list_repo.get_list(list_id)
-        if data.name:
-            task_list.name = data.name
-        self.list_repo.db.commit()
-        self.list_repo.db.refresh(task_list)
+        task_list = self.list_repo.update_name_list(list_id, data)
         return TaskListOut.model_validate(task_list)
 
     def get_list(self) -> list[TaskListOut]:
@@ -81,18 +77,8 @@ class TaskUseCase:
         return TaskOut.model_validate(task)
 
     def update_task(self, task_id: int, data: TaskUpdate) -> TaskOut:
-        task = self.repo.get_task(task_id)
-        if data.title is not None:
-            task.title = data.title
-        if data.description is not None:
-            task.description = data.description
-        if data.status is not None:
-            task.status = data.status
-        if data.priority is not None:
-            task.priority = data.priority
-        self.repo.db.commit()
-        self.repo.db.refresh(task)
-        return TaskOut.model_validate(task)
+        renewed_task = self.repo.update_task(task_id, data)
+        return TaskOut.model_validate(renewed_task)
 
     def delete_task(self, task_id: int):
         self.repo.delete_task(task_id)
