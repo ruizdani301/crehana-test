@@ -1,0 +1,22 @@
+[flake8]
+max-line-length = 88
+
+exclude = 
+    __pycache__,
+    crehanaenv,
+    .git,
+    .venv,
+    .env,
+    build,
+    dist,
+    coverage_html,
+    coverage.xml,
+    docker,
+    docker-compose.yml,
+    Dockerfile,
+    img,
+    *.pyc,
+    migrations
+    __init__.py
+
+extend-ignore = E203, W503
