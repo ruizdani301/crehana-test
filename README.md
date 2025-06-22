@@ -30,7 +30,7 @@ The project has a set of services that provided these actions, these will be exp
 This app uses JWT.
 To access protected routes:
 
-Register or login to get a token.
+login to get a token.
 
 Use the token in the Authorization: Bearer <token> header.
 
@@ -55,7 +55,10 @@ POST	http://127.0.0.1:8000/users/login   	Get JWT token
 POST	http://localhost:8000/tasklists/    	Create a task list
 GET	    http://127.0.0.1:8000/tasklists/1/tasks?status=in_progress&priority=high  Get
                                                                                  conditional task
-You can see the description of all APIs in swagger documentation ->  http://localhost:8000/docs 
+* You can see the description of all APIs in swagger documentation ->  http://localhost:8000/docs
+* When logging in, a token will be returned which must be used to call the rest of the endpoints.
+
+
 ```
 ![alt text](img/image-2.png)
 
